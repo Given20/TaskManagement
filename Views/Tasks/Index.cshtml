@@ -1,0 +1,72 @@
+﻿@model IEnumerable<TaskManagement.Models.Task>
+
+@{
+    ViewBag.Title = "Task List";
+}
+
+<h2>Task List</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-primary" })
+</p>
+
+<!-- Pie Chart -->
+<div style="width: 50%; margin: 20px auto;">
+    <canvas id="taskStatusChart"></canvas>
+</div>
+
+<table class="table">
+    <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Completed</th>
+        <th>Created Date</th>
+        <th>Actions</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.Title)</td>
+            <td>@Html.DisplayFor(modelItem => item.Description)</td>
+            <td>@Html.DisplayFor(modelItem => item.IsCompleted)</td>
+            <td>@Html.DisplayFor(modelItem => item.CreatedDate)</td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
+        </tr>
+    }
+</table>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var ctx = document.getElementById('taskStatusChart').getContext('2d');
+        var taskStatusChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Completed', 'Pending'],
+                datasets: [{
+                    label: 'Task Status',
+                    data: [@ViewBag.CompletedTasks, @ViewBag.PendingTasks],
+                    backgroundColor: ['#28a745', '#dc3545'],
+                    borderColor: ['#ffffff', '#ffffff'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Task Status Distribution'
+                    }
+                }
+            }
+        });
+    </script>
+}
